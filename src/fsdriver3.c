@@ -272,7 +272,7 @@ typedef struct goodStruct
     char * name;  // value on disk is ignored
   }goodStruct, * goodStruct_p;
 
-  typedef stuct verygoodStruct
+  typedef struct verygoodStruct
     {
       int counter;
       int size;
@@ -336,7 +336,7 @@ int myfsSeek(int fd, uint64_t position, int method)
       return (openFileList[fd].position);
   }
 
-  uint64_t myfsWrite (int fd char * src, uint64_t length)
+  uint64_t myfsWrite (int fd, char * src, uint64_t length)
     {
       if(fd >= FDOPENMAX)
         return-1;
