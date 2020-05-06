@@ -46,7 +46,6 @@ typedef struct openFileEntry
     uint64_t size;     //size of the file in bytes
     uint64_t Id;
     uint64_t position;
-    uint64_t blockStart;
     char * filebuffer;
   } openFileEntry, * openFileEntry_p;
 
@@ -377,9 +376,9 @@ int myfsSeek(int fd, uint64_t position, int method)
         memcpy (openFileList[fd].filebuffer + currentOffset, src, length);
         //writeblock = translateFileBlock(fd, currentBlock);
 
-        LBAwrite(openFileList[fd].filebuffer, 1, currentVCB_p + openFileList[fd].blockStart);
-        memcpy (openFileList[fd].filebuffer, openFileList[fd].filebuffer + vcurrentVCB_p->blockSize, vcurrentVCB_p-> blockSize);
-        ++currentVCB_p;
+        LBAwrite(filebuffer, 1, currentBlock + openFileList[fd].blockStart);
+        memcpy (filebuffer, filebuffer + vcurrentVCB_p->blockSize, vcurrentVCB_p-> blockSize);
+        ++currentBlock;
         currentOffset =
       }
       else
@@ -388,7 +387,7 @@ int myfsSeek(int fd, uint64_t position, int method)
       }
 
       openFileList[fd].position = openFileList[fd].position + length;
-      currentVCB_p = openFileList[fd].position / vcurrentVCB_p->blockSize;
+      currentBlock = openFileList[fd].position / vcurrentVCB_p->blockSize;
       currentOffset = openFileList[fd].position % vcurrentVCB_p->blockSize;
 
     }
