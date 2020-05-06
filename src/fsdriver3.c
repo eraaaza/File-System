@@ -1,7 +1,21 @@
 //
 // Created by Brad Peraza on 4/22/20.
 //
-
+/*#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <pthread.h>
+#include <errno.h>
+#include <math.h>
+#include "fsLow.h"
+*/
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 #include <string.h>
 #include <pthread.h>
@@ -48,6 +62,7 @@ typedef struct dirEntry
 
 #ifdef DIRECTORY
 //the global information about our filesystem is in the VCB
+
 typedef struct vcb_t
       {
         uint64_t  volumeSize;
@@ -59,6 +74,7 @@ typedef struct vcb_t
         uint64_t  freeBlockLastAllocatedBit;
         uint64_t  freeBlockEndBlocksRemaining;
         uint64_t  freeBlockTotalFreeBlocks;
+        uint64_t  vcurrentVCB_p;
         char *    freeBuffer; //this is in memory only
 
         uint64_t  rootDirectoryStart;
@@ -283,8 +299,9 @@ typedef struct goodStruct
     int myfsOpen(char * filename, int method)
       {
         int fd;
+        int i;
         //get a file descriptor
-        for(int i = 0; i < FDOPENMAX; i++)
+        for(i = 0; i < FDOPENMAX; i++)
           {
             if (openFileList[i].flags == FDOPENFREE)
             {
@@ -373,6 +390,8 @@ int myfsSeek(int fd, uint64_t position, int method)
 
     }
 
+    //here we need myfsClose, mfsRead, myfs
+
   int main (int argc, char *argv[])
     {
       char * filename;
@@ -387,4 +406,25 @@ int myfsSeek(int fd, uint64_t position, int method)
           blockSize = atoll (argv[3]);
         }
         retval = startPartitionSystem (filename, &volumeSize, &blockSize)
+        printf("Opened %s, Volume Size: %llu;  BlockSize: %llu; Return %d\n", filename, (ull_t)volumeSize, (ull_t)blockSize, retVal);
+	
+	char * buf = malloc(blockSize *2);
+	char * buf2 = malloc(blockSize *2);
+	memset (buf, 0, blockSize*2);
+	strcpy (buf, "Now is the time for all good people to come to the aid of their countrymen\n");
+	strcpy (&buf[blockSize+10], "Four score and seven years ago our fathers brought forth onto this continent a new nation\n");
+	LBAwrite (buf, 2, 0);
+	LBAwrite (buf, 2, 3);
+	LBAread (buf2, 2, 0);
+	if (memcmp(buf, buf2, blockSize*2)==0)
+		{
+		printf("Read/Write worked\n");
+		}
+	else
+		printf("FAILURE on Write/Read\n");
+		
+	free (buf);
+	free(buf2);
+	closePartitionSystem();
+	return 0;
     }
