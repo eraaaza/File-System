@@ -406,7 +406,7 @@ int myfsSeek(int fd, uint64_t position, int method)
           volumeSize = atoll (argv[2]);
           blockSize = atoll (argv[3]);
         }
-        retval = startPartitionSystem (filename, &volumeSize, &blockSize)
+        retVal = startPartitionSystem (filename, &volumeSize, &blockSize)
         printf("Opened %s, Volume Size: %llu;  BlockSize: %llu; Return %d\n", filename, (ull_t)volumeSize, (ull_t)blockSize, retVal);
 	
 	char * buf = malloc(blockSize *2);
