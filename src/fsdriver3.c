@@ -113,7 +113,7 @@ void flipFreeBlockBit (char * freeBuffer, uint64_t start, uint64_t count)
           }
             flipper = flipper >> bitnum;  //shift bit within byte
 
-            printf("Changing bit #%llu of the %llu byte in free block with flipper %X\n",
+            printf("Changing bit #%lu of the %lu byte in free block with flipper %X\n",
                       bitnum, byteStart, flipper);
 
             p = (unsigned char *)freeBuffer + byteStart;
@@ -147,8 +147,8 @@ char * initFreemap (uint64_t volumeSize, uint64_t blockSize, uint64_t startPos)
     //divide bytesNeeded by the block size to see how many blocks are needed for the freespace
     uint64_t freeBlocksNeeded = (freeBytesNeeded / blockSize) + 1;
 
-    printf("Total Blocks: %llu; Bytes: %llu; FreeBlocksNeeded: %llu\n",
-            , blocks, freeBytesNeeded, freeBlocksNeeded);
+    printf("Total Blocks: %lu; Bytes: %lu; FreeBlocksNeeded: %lu\n",
+             blocks, freeBytesNeeded, freeBlocksNeeded);
     char * freeBuffer = malloc (freeBlocksNeeded * blockSize);
     memset (freeBuffer, 0xFF, freeBlocksNeeded * blockSize);
 
@@ -182,9 +182,9 @@ void initDir (uint64_t blockSize, dirEntry_p parent)
     uint64_t blocksNeeded = (bytesNeeded + (blockSize - 1)) / blockSize;
     uint64_t actualDirEntries = (blocksNeeded * blockSize) / entrySize;
 
-    printf("For %d entries, we need %llu bytes, each entry is %llu  bytes\n",
+    printf("For %d entries, we need %lu bytes, each entry is %lu  bytes\n",
               AVGDIRECTORYENTRIES, bytesNeeded, entrySize);
-    printf("Actual directory entries = %llu\n", actualDirEntries);
+    printf("Actual directory entries = %lu\n", actualDirEntries);
 
     //i know how many blocks i need, ask the freeSystem for them
     uint64_t startLocation = getFreeSpace (blocksNeeded, CONTIG);
@@ -242,9 +242,9 @@ void initRootDir (uint64_t startLocation, uint64_t blockSize)
     uint64_t bytesNeeded = AVGDIRECTORYENTRIES * entrySize;
     uint64_t blocksNeeded = (bytesNeeded * blockSize) / entrySize;
 
-    printf("For %d entries, we need %llu bytes, each entry is %llu bytes\n",
+    printf("For %d entries, we need %lu bytes, each entry is %lu bytes\n",
               AVGDIRECTORYENTRIES, bytesNeeded, entrySize);
-    printf("Actual directory entries = %llu\n", actualDirEntries);
+    printf("Actual directory entries = %lu\n", actualDirEntries);
 
     // I know how many blocks i need, ask the freeSystem for them
     //uint64_t startLocation = getFreeSpace (blocksNeeded, CONTIG);
@@ -396,7 +396,7 @@ int myfsSeek(int fd, uint64_t position, int method)
   int main (int argc, char *argv[])
     {
       char * filename;
-      uint64_t = volumeSize;
+      uint64_t volumeSize;
       uint64_t blockSize;
       int retVal;
 
@@ -406,7 +406,7 @@ int myfsSeek(int fd, uint64_t position, int method)
           volumeSize = atoll (argv[2]);
           blockSize = atoll (argv[3]);
         }
-        retVal = startPartitionSystem (filename, &volumeSize, &blockSize)
+        retVal = startPartitionSystem (filename, &volumeSize, &blockSize);
         printf("Opened %s, Volume Size: %llu;  BlockSize: %llu; Return %d\n", filename, (ull_t)volumeSize, (ull_t)blockSize, retVal);
 	
 	char * buf = malloc(blockSize *2);
