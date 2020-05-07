@@ -62,7 +62,7 @@ typedef struct dirEntry
       uint64_t flags;
     } dirEntry, * dirEntry_p;
 
-#ifdef DIRECTORY
+
 //the global information about our filesystem is in the VCB
 
 typedef struct vcb_t
@@ -76,7 +76,7 @@ typedef struct vcb_t
         uint64_t  freeBlockLastAllocatedBit;
         uint64_t  freeBlockEndBlocksRemaining;
         uint64_t  freeBlockTotalFreeBlocks;
-        uint64_t  vcurrentVCB_p;
+        uint64_t  currentVCB_p;
         char *    freeBuffer; //this is in memory only
 
         uint64_t  rootDirectoryStart;
@@ -94,7 +94,6 @@ uint64_t getNewFileID()
     return (retVal);
   }
 
-#ifdef FREEMAP
 void flipFreeBlockBit (char * freeBuffer, uint64_t start, uint64_t count)
   {
     unsigned char * p;
@@ -172,7 +171,6 @@ void freemap (uint64_t volumeSize, uint64_t blockSize)
     currentVCB_p->freeBlockLocation = 1;
   }
 
-#endif
 
 void initDir (uint64_t blockSize, dirEntry_p parent)
   {
@@ -273,7 +271,7 @@ void initRootDir (uint64_t startLocation, uint64_t blockSize)
 
     LBAwrite (rootDirBuffer_p, blocksNeeded, startLocation);
   }
-  #endif
+
 
 
 /*typedef struct badStruct
@@ -317,7 +315,7 @@ typedef struct goodStruct
           //null, file does not exist
           //
           openFileList[i].flags = FDOPENINUSE | FDOPENFORREAD | FDOPENFORWRITE;
-          openFileList[i].filebuffer = malloc (vcurrentVCB_p-> blockSize * 2);
+          openFileList[i].filebuffer = malloc (currentVCB_p-> blockSize * 2);
           openFileList[i].pointer = 0;  //seek is beginning of FILEIDINCREMENT
           openFileList[i].size = 0;
 
@@ -364,23 +362,23 @@ int myfsSeek(int fd, uint64_t position, int method)
       if((openFileList[fd].flags & FDOPENINUSE) != FDOPENINUSE)
         return -1;
 
-      uint64_t currentVCB_p = openFileList[fd].position / vcurrentVCB_p->blockSize;
-      uint64_t currentOffset = openFileList[fd].position % vcurrentVCB_p->blockSize;
+      uint64_t currentVCB_p = openFileList[fd].position / currentVCB_p->blockSize;
+      uint64_t currentOffset = openFileList[fd].position % currentVCB_p->blockSize;
 
-      if(length + currentOffset < vcurrentVCB_p->blockSize)
+      if(length + currentOffset < currentVCB_p->blockSize)
         {
           //we are still in our buffer
           memcpy (openFileList[fd].filebuffer + currentOffset, src, length);
         }
-      else if (length + currentOffset < vcurrentVCB_p->blockSize * 2)
+      else if (length + currentOffset < currentVCB_p->blockSize * 2)
       {
         memcpy (openFileList[fd].filebuffer + currentOffset, src, length);
         //writeblock = translateFileBlock(fd, currentBlock);
 
         LBAwrite(openFileList[fd].filebuffer, 1, currentVCB_p + openFileList[fd].blockStart);
-        memcpy (openFileList[fd].filebuffer, openFileList[fd].filebuffer + vcurrentVCB_p->blockSize, vcurrentVCB_p-> blockSize);
+        memcpy (openFileList[fd].filebuffer, openFileList[fd].filebuffer + currentVCB_p->blockSize, currentVCB_p-> blockSize);
         ++currentVCB_p;
-        currentOffset =
+        //currentOffset =
       }
       else
       {
@@ -388,8 +386,8 @@ int myfsSeek(int fd, uint64_t position, int method)
       }
 
       openFileList[fd].position = openFileList[fd].position + length;
-      currentVCB_p = openFileList[fd].position / vcurrentVCB_p->blockSize;
-      currentOffset = openFileList[fd].position % vcurrentVCB_p->blockSize;
+      currentVCB_p = openFileList[fd].position / currentVCB_p->blockSize;
+      currentOffset = openFileList[fd].position % currentVCB_p->blockSize;
 
     }
 
