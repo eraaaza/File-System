@@ -39,6 +39,8 @@
 #define FDOPENFORWRITE  0x00000010  //0000 0000 0000 0000 0000 0000 0001 0000
 #define FDOPENFORREAD   0x00000020  //0000 0000 0000 0000 0000 0000 0010 0000
 
+uint64_t actualDirEntries;
+
 typedef struct openFileEntry
   {
     int flags;
@@ -85,7 +87,14 @@ typedef struct vcb_t
 
       } vcb_t, * vcb_p;
 
-vcb_p   currentVCB_p;
+//here we need to initialize a volume control block
+
+vcb_p  currentVCB_p;
+void initVolumeControlBlock()
+  {
+    
+    currentVCB_p->blockSize = 1;
+  }
 uint64_t getNewFileID()
   {
     uint64_t retVal;
@@ -180,7 +189,7 @@ void initDir (uint64_t blockSize, dirEntry_p parent)
     uint64_t entrySize = sizeof(dirEntry);
     uint64_t bytesNeeded = AVGDIRECTORYENTRIES * entrySize;
     uint64_t blocksNeeded = (bytesNeeded + (blockSize - 1)) / blockSize;
-    uint64_t actualDirEntries = (blocksNeeded * blockSize) / entrySize;
+    actualDirEntries = (blocksNeeded * blockSize) / entrySize;
 
     printf("For %d entries, we need %lu bytes, each entry is %lu  bytes\n",
               AVGDIRECTORYENTRIES, bytesNeeded, entrySize);
@@ -362,7 +371,8 @@ int myfsSeek(int fd, uint64_t position, int method)
       if((openFileList[fd].flags & FDOPENINUSE) != FDOPENINUSE)
         return -1;
 
-      uint64_t currentVCB_p = openFileList[fd].position / currentVCB_p->blockSize;
+//this value below was named currentVCB_p and was throwing a lot of errors i believe due to naming overlaps, not sure what the value is used for yet
+      uint64_t currentVCB = openFileList[fd].position / currentVCB_p->blockSize;
       uint64_t currentOffset = openFileList[fd].position % currentVCB_p->blockSize;
 
       if(length + currentOffset < currentVCB_p->blockSize)
@@ -375,7 +385,7 @@ int myfsSeek(int fd, uint64_t position, int method)
         memcpy (openFileList[fd].filebuffer + currentOffset, src, length);
         //writeblock = translateFileBlock(fd, currentBlock);
 
-        LBAwrite(openFileList[fd].filebuffer, 1, currentVCB_p + openFileList[fd].blockStart);
+        LBAwrite(openFileList[fd].filebuffer, 1, currentVCB + openFileList[fd].blockStart);
         memcpy (openFileList[fd].filebuffer, openFileList[fd].filebuffer + currentVCB_p->blockSize, currentVCB_p-> blockSize);
         ++currentVCB_p;
         //currentOffset =
@@ -386,7 +396,7 @@ int myfsSeek(int fd, uint64_t position, int method)
       }
 
       openFileList[fd].position = openFileList[fd].position + length;
-      currentVCB_p = openFileList[fd].position / currentVCB_p->blockSize;
+      currentVCB = openFileList[fd].position / currentVCB_p->blockSize;
       currentOffset = openFileList[fd].position % currentVCB_p->blockSize;
 
     }
@@ -395,6 +405,8 @@ int myfsSeek(int fd, uint64_t position, int method)
 
   int main (int argc, char *argv[])
     {
+
+      initVolumeControlBlock();
       char * filename;
       uint64_t volumeSize;
       uint64_t blockSize;
@@ -408,6 +420,8 @@ int myfsSeek(int fd, uint64_t position, int method)
         }
         retVal = startPartitionSystem (filename, &volumeSize, &blockSize);
         printf("Opened %s, Volume Size: %llu;  BlockSize: %llu; Return %d\n", filename, (ull_t)volumeSize, (ull_t)blockSize, retVal);
+        
+        printf("Set Volume Control Block");
 	
 	char * buf = malloc(blockSize *2);
 	char * buf2 = malloc(blockSize *2);
