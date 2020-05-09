@@ -408,6 +408,9 @@ int myfsSeek(int fd, uint64_t position, int method)
 
       initVolumeControlBlock();
       char * filename;
+      char * userInput;
+      char * closeValue = ":q";
+
       uint64_t volumeSize;
       uint64_t blockSize;
       int retVal;
@@ -445,6 +448,17 @@ int myfsSeek(int fd, uint64_t position, int method)
 		}
 	else
 		printf("FAILURE on Write/Read\n");
+
+
+
+  while(strncmp(userInput, closeValue, strlen(closeValue)) != 0)
+  {
+    printf("Please enter in a command: ");
+    fgets(userInput, 32, stdin);
+    int length = strlen(userInput);
+    printf("%s", userInput);
+    printf("%d", length);
+  }
 		
 	free (buf);
 	free(buf2);
