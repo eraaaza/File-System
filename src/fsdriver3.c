@@ -410,6 +410,13 @@ int myfsSeek(int fd, uint64_t position, int method)
       char * filename;
       char * userInput;
       char * closeValue = ":q";
+      /*const char *validInputValues[5];
+      validInputValues[0] = ":h";
+      validInputValues[1] = ":r";
+      validInputValues[2] = ":t";
+      validInputValues[3] = ":p";
+      validInputValues[4] = ":n";*/
+      
 
       uint64_t volumeSize;
       uint64_t blockSize;
@@ -450,15 +457,40 @@ int myfsSeek(int fd, uint64_t position, int method)
 		printf("FAILURE on Write/Read\n");
 
 
-
+  printf("Enter in ':h' for help\n");
   while(strncmp(userInput, closeValue, strlen(closeValue)) != 0)
   {
+
     printf("Please enter in a command: ");
     fgets(userInput, 32, stdin);
     int length = strlen(userInput);
-    printf("%s", userInput);
+    /*printf("%s", userInput);
+    printf("\n");
     printf("%d", length);
+    printf("\n");*/
+
+
+//user input logic
+if(strncmp(userInput, ":h", strlen(":h")) == 0)
+{
+  printf("User entered :h and we should now print commands\n");
+}else if(strncmp(userInput, ":r", strlen(":r")) == 0)
+{
+
+}else
+{
+  if(strncmp(userInput, closeValue, strlen(closeValue)) != 0)
+  {
+  printf("Unrecognized Command\n");
+  }else
+  {
+  printf("Closing Virtual Drive\n");
   }
+  
+}
+
+}
+
 		
 	free (buf);
 	free(buf2);
