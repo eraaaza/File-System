@@ -306,7 +306,7 @@ typedef struct goodStruct
       char name[]; //valuie on disk ignored
     }verygoodStruct, * verygoodStruct_p;
 
-   /* int myfsOpen(char * filename, int method)
+    int myfsOpen(char * filename, int method)
       {
         int fd;
         int i;
@@ -329,13 +329,13 @@ typedef struct goodStruct
           openFileList[i].size = 0;
 
           return (fd);
-      }*/
+      }
 
 #define MYSEEK_CUR  1
 #define MYSEEK_POS  2
 #define MYSEEK_END  3
 
-/*int myfsSeek(int fd, uint64_t position, int method)
+int myfsSeek(int fd, uint64_t position, int method)
   {
     //make sure fd is in use
     if(fd >= FDOPENMAX)
@@ -361,9 +361,9 @@ typedef struct goodStruct
             break;
       }
       return (openFileList[fd].position);
-  }*/
+  }
 
-  /*uint64_t myfsWrite (int fd, char * src, uint64_t length)
+  uint64_t myfsWrite (int fd, char * src, uint64_t length)
     {
       if(fd >= FDOPENMAX)
         return-1;
@@ -399,7 +399,7 @@ typedef struct goodStruct
       currentVCB = openFileList[fd].position / currentVCB_p->blockSize;
       currentOffset = openFileList[fd].position % currentVCB_p->blockSize;
 
-    }*/
+    }
 
     //here we need myfsClose, mfsRead, myfs
 
