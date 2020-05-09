@@ -93,7 +93,7 @@ vcb_p  currentVCB_p;
 void initVolumeControlBlock()
   {
     
-    currentVCB_p->blockSize = 1;
+    //currentVCB_p->blockSize = 1;
   }
 uint64_t getNewFileID()
   {
@@ -306,7 +306,7 @@ typedef struct goodStruct
       char name[]; //valuie on disk ignored
     }verygoodStruct, * verygoodStruct_p;
 
-    int myfsOpen(char * filename, int method)
+   /* int myfsOpen(char * filename, int method)
       {
         int fd;
         int i;
@@ -329,13 +329,13 @@ typedef struct goodStruct
           openFileList[i].size = 0;
 
           return (fd);
-      }
+      }*/
 
 #define MYSEEK_CUR  1
 #define MYSEEK_POS  2
 #define MYSEEK_END  3
 
-int myfsSeek(int fd, uint64_t position, int method)
+/*int myfsSeek(int fd, uint64_t position, int method)
   {
     //make sure fd is in use
     if(fd >= FDOPENMAX)
@@ -361,9 +361,9 @@ int myfsSeek(int fd, uint64_t position, int method)
             break;
       }
       return (openFileList[fd].position);
-  }
+  }*/
 
-  uint64_t myfsWrite (int fd, char * src, uint64_t length)
+  /*uint64_t myfsWrite (int fd, char * src, uint64_t length)
     {
       if(fd >= FDOPENMAX)
         return-1;
@@ -387,7 +387,7 @@ int myfsSeek(int fd, uint64_t position, int method)
 
         LBAwrite(openFileList[fd].filebuffer, 1, currentVCB + openFileList[fd].blockStart);
         memcpy (openFileList[fd].filebuffer, openFileList[fd].filebuffer + currentVCB_p->blockSize, currentVCB_p-> blockSize);
-        ++currentVCB_p;
+        ++currentVCB;
         //currentOffset =
       }
       else
@@ -399,7 +399,7 @@ int myfsSeek(int fd, uint64_t position, int method)
       currentVCB = openFileList[fd].position / currentVCB_p->blockSize;
       currentOffset = openFileList[fd].position % currentVCB_p->blockSize;
 
-    }
+    }*/
 
     //here we need myfsClose, mfsRead, myfs
 
@@ -418,10 +418,18 @@ int myfsSeek(int fd, uint64_t position, int method)
           volumeSize = atoll (argv[2]);
           blockSize = atoll (argv[3]);
         }
+        else{
+            printf("No command line inputs\n");
+            printf("Default values will be used\n");
+            filename = "Virtual Harddrive";
+            volumeSize = 10000000;
+            blockSize = 512;
+
+        }
         retVal = startPartitionSystem (filename, &volumeSize, &blockSize);
         printf("Opened %s, Volume Size: %llu;  BlockSize: %llu; Return %d\n", filename, (ull_t)volumeSize, (ull_t)blockSize, retVal);
         
-        printf("Set Volume Control Block");
+        printf("Set Volume Control Block\n");
 	
 	char * buf = malloc(blockSize *2);
 	char * buf2 = malloc(blockSize *2);
