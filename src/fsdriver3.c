@@ -421,6 +421,16 @@ int myfsSeek(int fd, uint64_t position, int method)
 
     //here we need myfsClose, mfsRead, myfs
 
+    void printUserOptions()
+    {
+      printf("%s\n", "--------USER COMMANDS---------");
+      printf("%s\n", "Template for Commands: 'What you will do' [command]");
+      printf("%s\n", "Exit Program [:q]");
+      printf("%s\n", "Open File [:o]");
+      printf("%s\n", "Edit File [:t]");
+      printf("%s\n", "Exit File [:e]");
+    }
+
   int main (int argc, char *argv[])
     {
 
@@ -492,7 +502,7 @@ int myfsSeek(int fd, uint64_t position, int method)
 //user input logic
 if(strncmp(userInput, ":h", strlen(":h")) == 0)
 {
-  printf("User entered :h and we should now print commands\n");
+  printUserOptions();
 }else if(strncmp(userInput, ":r", strlen(":r")) == 0)
 {
 
