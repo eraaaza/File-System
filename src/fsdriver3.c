@@ -33,6 +33,9 @@
 
 uint64_t actualDirEntries;
 
+char * testString = "-----DEBUG-----";
+
+
 typedef struct openFileEntry
   {
     int flags;
@@ -84,7 +87,6 @@ typedef struct vcb_t
 vcb_p  currentVCB_p;
 void initVolumeControlBlock(uint64_t inputBlockSize, uint64_t inputVolumeSize)
   {
-    char * testString = "-----DEBUG-----";
     printf("%ld\n", inputBlockSize);
     printf("%ld\n", inputVolumeSize);
 
@@ -148,6 +150,7 @@ void flipFreeBlockBit (char * freeBuffer, uint64_t start, uint64_t count)
           }
   }
 
+//helper method incase of overflow
 uint64_t getFreeSpace (uint64_t blocksNeeded, int blockType)
   {
     uint64_t retVal = currentVCB_p->freeBlockLastAllocatedBit;
@@ -259,7 +262,7 @@ void initDir (uint64_t blockSize, dirEntry_p parent)
       LBAwrite (dirBuffer_p, blocksNeeded, startLocation);
   }
 
-void initRootDir (uint64_t startLocation, uint64_t blockSize)
+void initRootDir (/*uint64_t startLocation,*/ uint64_t blockSize)
   {
     dirEntry_p rootDirBuffer_p;
 
@@ -272,7 +275,7 @@ void initRootDir (uint64_t startLocation, uint64_t blockSize)
     printf("Actual directory entries = %lu\n", actualDirEntries);
 
     // I know how many blocks i need, ask the freeSystem for them
-    //uint64_t startLocation = getFreeSpace (blocksNeeded, CONTIG);
+    uint64_t startLocation = getFreeSpace (blocksNeeded, CONTIG);
 
     rootDirBuffer_p = malloc(blocksNeeded * blockSize);
 
@@ -464,11 +467,15 @@ int myfsSeek(int fd, uint64_t position, int method)
             blockSize = 512;
 
         }
-        initVolumeControlBlock(blockSize, volumeSize);
         retVal = startPartitionSystem (filename, &volumeSize, &blockSize);
         printf("Opened %s, Volume Size: %llu;  BlockSize: %llu; Return %d\n", filename, (ull_t)volumeSize, (ull_t)blockSize, retVal);
         
+        initVolumeControlBlock(blockSize, volumeSize);
         printf("Set Volume Control Block\n");
+
+        initRootDir(/*getFreeSpace(1, CONTIG),*/ blockSize);
+
+        freemap(volumeSize, blockSize);
 	
 	char * buf = malloc(blockSize *2);
 	char * buf2 = malloc(blockSize *2);
@@ -487,17 +494,19 @@ int myfsSeek(int fd, uint64_t position, int method)
 
 
   printf("Enter in ':h' for help\n");
+
   while(strncmp(userInput, closeValue, strlen(closeValue)) != 0)
   {
+    
 
     printf("Please enter in a command: ");
-    fgets(userInput, 32, stdin);
+    fgets(userInput, 128, stdin);
+    
     int length = strlen(userInput);
     /*printf("%s", userInput);
     printf("\n");
     printf("%d", length);
     printf("\n");*/
-
 
 //user input logic
 if(strncmp(userInput, ":h", strlen(":h")) == 0)
