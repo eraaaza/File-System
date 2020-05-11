@@ -70,7 +70,7 @@ typedef struct vcb_t
         uint64_t  freeBlockLastAllocatedBit;
         uint64_t  freeBlockEndBlocksRemaining;
         uint64_t  freeBlockTotalFreeBlocks;
-        uint64_t  currentVCB_p;
+        uint64_t  currentVCB;
         char *    freeBuffer; //this is in memory only
 
         uint64_t  rootDirectoryStart;
@@ -82,10 +82,34 @@ typedef struct vcb_t
 //here we need to initialize a volume control block
 
 vcb_p  currentVCB_p;
-void initVolumeControlBlock()
+void initVolumeControlBlock(uint64_t inputBlockSize, uint64_t inputVolumeSize)
   {
-    
-    //currentVCB_p->blockSize = 1;
+    char * testString = "-----DEBUG-----";
+    printf("%ld\n", inputBlockSize);
+    printf("%ld\n", inputVolumeSize);
+
+    currentVCB_p =  malloc(sizeof(currentVCB_p));
+    currentVCB_p->blockSize = inputBlockSize;
+    currentVCB_p->volumeSize = inputVolumeSize;
+    currentVCB_p->numberOfBlocks = inputVolumeSize / inputBlockSize;
+
+    printf("%s\n" ,testString);
+
+    //DEBUG FOR blockSize
+    printf("%s", "currentVCB_p blockSize = ");
+        printf("%ld\n", currentVCB_p->blockSize);
+
+    //DEBUG FOR volumeSize
+    printf("%s", "currentVCB_p volumeSize = ");
+        printf("%ld\n", currentVCB_p->volumeSize);
+
+    //DEBUG FOR numberOfBlocks
+    printf("%s", "currentVCB_p numberOfBlocks = ");
+        printf("%ld\n", currentVCB_p->numberOfBlocks);
+
+    printf("%s\n" ,testString);
+
+
   }
 uint64_t getNewFileID()
   {
@@ -270,6 +294,8 @@ void initRootDir (uint64_t startLocation, uint64_t blockSize)
     rootDirBuffer_p[0].location = startLocation;
     rootDirBuffer_p[0].sizeInBytes = actualDirEntries * entrySize;
 
+    currentVCB_p->rootDirectoryStart = startLocation;
+
     LBAwrite (rootDirBuffer_p, blocksNeeded, startLocation);
   }
 
@@ -398,7 +424,7 @@ int myfsSeek(int fd, uint64_t position, int method)
   int main (int argc, char *argv[])
     {
 
-      initVolumeControlBlock();
+    
       char * filename;
       char * userInput;
       char * closeValue = ":q";
@@ -428,6 +454,7 @@ int myfsSeek(int fd, uint64_t position, int method)
             blockSize = 512;
 
         }
+        initVolumeControlBlock(blockSize, volumeSize);
         retVal = startPartitionSystem (filename, &volumeSize, &blockSize);
         printf("Opened %s, Volume Size: %llu;  BlockSize: %llu; Return %d\n", filename, (ull_t)volumeSize, (ull_t)blockSize, retVal);
         
@@ -486,6 +513,7 @@ if(strncmp(userInput, ":h", strlen(":h")) == 0)
 		
 	free (buf);
 	free(buf2);
+  free(currentVCB_p);
 	closePartitionSystem();
 	return 0;
     }
