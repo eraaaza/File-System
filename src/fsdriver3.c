@@ -139,7 +139,6 @@ void flipFreeBlockBit (char * freeBuffer, uint64_t start, uint64_t count)
        if (bitnum > 0) {
           }
             flipper = flipper >> bitnum;  //shift bit within byte
-
             printf("Changing bit #%lu of the %lu byte in free block with flipper %X\n",
                       bitnum, byteStart, flipper);
 
@@ -147,6 +146,7 @@ void flipFreeBlockBit (char * freeBuffer, uint64_t start, uint64_t count)
             *p = *p ^ flipper;
             ++start;
             --count;
+            
           }
   }
 
@@ -177,25 +177,25 @@ char * initFreemap (uint64_t volumeSize, uint64_t blockSize, uint64_t startPos)
 
     printf("Total Blocks: %lu; Bytes: %lu; FreeBlocksNeeded: %lu\n",
              blocks, freeBytesNeeded, freeBlocksNeeded);
+    
+
+    
     char * freeBuffer = malloc (freeBlocksNeeded * blockSize);
     memset (freeBuffer, 0xFF, freeBlocksNeeded * blockSize);
-
     flipFreeBlockBit (freeBuffer, 0, 1);  //always clear out the VCB blocks
     flipFreeBlockBit  (freeBuffer, startPos, freeBlocksNeeded); //clear Freemap blocks
-
     LBAwrite (freeBuffer, freeBlocksNeeded, startPos); //write to disk
+
     currentVCB_p->freeBlockBlocks = freeBlocksNeeded;
     currentVCB_p->freeBlockLastAllocatedBit = startPos + freeBlocksNeeded;
     currentVCB_p->freeBlockEndBlocksRemaining = blocks - currentVCB_p->freeBlockLastAllocatedBit;
     currentVCB_p->freeBlockTotalFreeBlocks = currentVCB_p->freeBlockEndBlocksRemaining;
-
     return  (freeBuffer);
   }
 
 void freemap (uint64_t volumeSize, uint64_t blockSize)
   {
     currentVCB_p->freeBuffer = initFreemap (volumeSize, blockSize, 1);
-
     currentVCB_p->freeBlockLocation = 1;
   }
 
@@ -476,9 +476,13 @@ int myfsSeek(int fd, uint64_t position, int method)
         initRootDir(/*getFreeSpace(1, CONTIG),*/ blockSize);
 
         freemap(volumeSize, blockSize);
+        printf("%s\n" ,testString);
 	
+  //here we are getting an error when we reduce the volume size below 1000000 i think
 	char * buf = malloc(blockSize *2);
+  printf("%s\n" ,testString);
 	char * buf2 = malloc(blockSize *2);
+  printf("%s\n" ,testString);
 	memset (buf, 0, blockSize*2);
 	strcpy (buf, "Now is the time for all good people to come to the aid of their countrymen\n");
 	strcpy (&buf[blockSize+10], "Four score and seven years ago our fathers brought forth onto this continent a new nation\n");
