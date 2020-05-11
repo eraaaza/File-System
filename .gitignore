@@ -1,0 +1,7 @@
+.idea/
+.git
+*.class
+conf/httpd.conf
+public_html/.htaccess
+.env
+.vs
