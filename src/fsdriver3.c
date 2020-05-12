@@ -425,6 +425,8 @@ int myfsSeek(int fd, uint64_t position, int method)
     int myfsClose(FILE *filePointer)
       {
 
+        int fd;
+        int i;
         if(fd >= FDOPENMAX)
         return-1;
 
@@ -432,8 +434,7 @@ int myfsSeek(int fd, uint64_t position, int method)
         return -1;
 
 
-        int fd;
-        int i;
+        
 
         for(i = 0; i < FDOPENMAX; i++)
           {
@@ -451,7 +452,7 @@ int myfsSeek(int fd, uint64_t position, int method)
 
       }
 
-    //here we need myfsClose, mfsRead, myfs
+    //here we need  mfsRead
 
     void printUserOptions()
     {
