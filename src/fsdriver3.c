@@ -1,5 +1,5 @@
-/*
-* Class: CSC-415-1# Spring 2020
+/*************************************************************
+* Class: CSC-415-01 Spring 2020
 * Group Name: Team Alpha 1
 * Name: Daniel Belmeur
 * Student ID: 913525345
@@ -10,10 +10,11 @@
 *
 * Project: <Assignment 3–File System
 *
-* File: <fsdriver3>
+* File: <CSC CSC 415 Assignment 3 Report>
 *
-Description: Our filesytem
-**/
+*Description: Our File System
+*************************************************************/
+
 
 #include <sys/types.h>
 #include <sys/stat.h>
