@@ -327,9 +327,9 @@ typedef struct goodStruct
       char name[]; //valuie on disk ignored
     }verygoodStruct, * verygoodStruct_p;
 
-    int myfsOpen(char * *filename, int method)
+    int myfsOpen(char * filename, int method)
       {
-        printf("%s", "We are in myfsOpen");
+        printf("%s\n", "We are in myfsOpen");
         int fd;
         int i;
         //get a file descriptor
@@ -498,6 +498,10 @@ int myfsSeek(int fd, uint64_t position, int method)
             blockSize = 512;
 
         }
+        uint64_t entrySize = sizeof(dirEntry);
+        uint64_t bytesNeeded = AVGDIRECTORYENTRIES * entrySize;
+        uint64_t blocksNeeded = (bytesNeeded * blockSize) / entrySize;
+
         retVal = startPartitionSystem (filename, &volumeSize, &blockSize);
         printf("Opened %s, Volume Size: %llu;  BlockSize: %llu; Return %d\n", filename, (ull_t)volumeSize, (ull_t)blockSize, retVal);
         
@@ -507,6 +511,9 @@ int myfsSeek(int fd, uint64_t position, int method)
         initRootDir(/*getFreeSpace(1, CONTIG),*/ blockSize);
 
         freemap(volumeSize, blockSize);
+
+        openFileList = malloc(blocksNeeded * blockSize);
+        
         printf("%s\n" ,testString);
 	
   //here we are getting an error when we reduce the volume size below 1000000 i think
@@ -551,8 +558,8 @@ if(strncmp(userInput, ":h", strlen(":h")) == 0)
 {
   printf("Please enter in a filename to open: ");
   fgets(userInput, 512, stdin);
-  printf("%s\n", "myfsOpen gives a segmentation fault i believe because we dont initialize our openFileList");
-  //myfsOpen(userInput, CONTIG);
+  //printf("%s\n", "myfsOpen gives a segmentation fault i believe because we dont initialize our openFileList");
+  myfsOpen(userInput, CONTIG);
 
 }else
 {
@@ -572,6 +579,7 @@ if(strncmp(userInput, ":h", strlen(":h")) == 0)
 	free (buf);
 	free(buf2);
   free(currentVCB_p);
+  free(openFileList);
 	closePartitionSystem();
 	return 0;
     }
