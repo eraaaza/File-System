@@ -327,8 +327,9 @@ typedef struct goodStruct
       char name[]; //valuie on disk ignored
     }verygoodStruct, * verygoodStruct_p;
 
-    int myfsOpen(char * filename, int method)
+    int myfsOpen(char * *filename, int method)
       {
+        printf("%s", "We are in myfsOpen");
         int fd;
         int i;
         //get a file descriptor
@@ -546,8 +547,12 @@ int myfsSeek(int fd, uint64_t position, int method)
 if(strncmp(userInput, ":h", strlen(":h")) == 0)
 {
   printUserOptions();
-}else if(strncmp(userInput, ":r", strlen(":r")) == 0)
+}else if(strncmp(userInput, ":o", strlen(":o")) == 0)
 {
+  printf("Please enter in a filename to open: ");
+  fgets(userInput, 512, stdin);
+  printf("%s\n", "myfsOpen gives a segmentation fault i believe because we dont initialize our openFileList");
+  //myfsOpen(userInput, CONTIG);
 
 }else
 {
