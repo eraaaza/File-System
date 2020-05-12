@@ -423,9 +423,9 @@ int myfsSeek(int fd, uint64_t position, int method)
 
     }
 
-    int myfsClose(FILE *filePointer)
+    int myfsClose(char * filename)
       {
-
+        printf("%s\n", "We are in myfsClose but i dont believe it is setup to work other than free memory");
         int fd;
         int i;
         if(fd >= FDOPENMAX)
@@ -561,6 +561,11 @@ if(strncmp(userInput, ":h", strlen(":h")) == 0)
   //printf("%s\n", "myfsOpen gives a segmentation fault i believe because we dont initialize our openFileList");
   myfsOpen(userInput, CONTIG);
 
+}else if(strncmp(userInput, ":e", strlen(":e")) == 0){
+  printf("Please enter in a filename to close: ");
+  fgets(userInput, 512, stdin);
+  //printf("%s\n", "myfsOpen gives a segmentation fault i believe because we dont initialize our openFileList");
+  myfsClose(userInput);
 }else
 {
   if(strncmp(userInput, closeValue, strlen(closeValue)) != 0)
