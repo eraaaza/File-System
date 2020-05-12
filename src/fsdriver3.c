@@ -1,6 +1,19 @@
-//
-// Created by Brad Peraza on 4/22/20.
-//
+/*
+* Class: CSC-415-1# Spring 2020
+* Group Name: Team Alpha 1
+* Name: Daniel Belmeur
+* Student ID: 913525345
+* Name: Brad Peraza
+* Student ID: 916768260
+* Name: Amily Wu
+* Student ID:916929226
+*
+* Project: <Assignment 3–File System
+*
+* File: <fsdriver3>
+*
+Description: Our filesytem
+**/
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -579,14 +592,13 @@ if(strncmp(userInput, ":h", strlen(":h")) == 0)
   fgets(userInput, 512, stdin);
   //printf("%s\n", "myfsOpen gives a segmentation fault i believe because we dont initialize our openFileList");
   //myfsSeek(userInput);
-}
-else if(strncmp(userInput, ":q", strlen(":q")) == 0)
+}else if(strncmp(userInput, ":q", strlen(":q")) == 0)
 {
   printf("Closing Virtual Drive\n");
 }else
-  {
-    printf("Unrecognized Command\n");
-  }
+{
+  printf("Unrecognized Command\n");
+}
   
 
 
