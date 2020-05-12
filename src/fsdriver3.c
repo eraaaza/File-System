@@ -422,6 +422,35 @@ int myfsSeek(int fd, uint64_t position, int method)
 
     }
 
+    int myfsClose(FILE *filePointer)
+      {
+
+        if(fd >= FDOPENMAX)
+        return-1;
+
+      if((openFileList[fd].flags & FDOPENINUSE) != FDOPENINUSE)
+        return -1;
+
+
+        int fd;
+        int i;
+
+        for(i = 0; i < FDOPENMAX; i++)
+          {
+            if (openFileList[i].flags != FDOPENFREE)
+            {
+              fd = i;
+              break;
+            }
+          }
+
+          free(openFileList[i].filebuffer);
+          openFileList[i].pointer = 0;  //seek is beginning of FILEIDINCREMENT
+          openFileList[i].size = 0;
+          openFileList[i].flags = FDOPENFREE;
+
+      }
+
     //here we need myfsClose, mfsRead, myfs
 
     void printUserOptions()
