@@ -95,7 +95,7 @@ void initVolumeControlBlock(uint64_t inputBlockSize, uint64_t inputVolumeSize)
     currentVCB_p->volumeSize = inputVolumeSize;
     currentVCB_p->numberOfBlocks = inputVolumeSize / inputBlockSize;
 
-    printf("%s\n" ,testString);
+    //printf("%s\n" ,testString);
 
     //DEBUG FOR blockSize
     printf("%s", "currentVCB_p blockSize = ");
@@ -109,7 +109,7 @@ void initVolumeControlBlock(uint64_t inputBlockSize, uint64_t inputVolumeSize)
     printf("%s", "currentVCB_p numberOfBlocks = ");
         printf("%ld\n", currentVCB_p->numberOfBlocks);
 
-    printf("%s\n" ,testString);
+    //printf("%s\n" ,testString);
 
 
   }
@@ -463,6 +463,8 @@ int myfsSeek(int fd, uint64_t position, int method)
       printf("%s\n", "Open File [:o]");
       printf("%s\n", "Edit File [:t]");
       printf("%s\n", "Exit File [:e]");
+      printf("%s\n", "Seek File [:s]");
+
     }
 
   int main (int argc, char *argv[])
@@ -514,13 +516,13 @@ int myfsSeek(int fd, uint64_t position, int method)
 
         openFileList = malloc(blocksNeeded * blockSize);
         
-        printf("%s\n" ,testString);
+        //printf("%s\n" ,testString);
 	
   //here we are getting an error when we reduce the volume size below 1000000 i think
 	char * buf = malloc(blockSize *2);
-  printf("%s\n" ,testString);
+  //printf("%s\n" ,testString);
 	char * buf2 = malloc(blockSize *2);
-  printf("%s\n" ,testString);
+  //printf("%s\n" ,testString);
 	memset (buf, 0, blockSize*2);
 	strcpy (buf, "Now is the time for all good people to come to the aid of their countrymen\n");
 	strcpy (&buf[blockSize+10], "Four score and seven years ago our fathers brought forth onto this continent a new nation\n");
@@ -558,25 +560,35 @@ if(strncmp(userInput, ":h", strlen(":h")) == 0)
 {
   printf("Please enter in a filename to open: ");
   fgets(userInput, 512, stdin);
+  
+  uint64_t position;
   //printf("%s\n", "myfsOpen gives a segmentation fault i believe because we dont initialize our openFileList");
-  myfsOpen(userInput, CONTIG);
+  
+  myfsSeek(myfsOpen(userInput, CONTIG), 0, CONTIG);
+  
 
-}else if(strncmp(userInput, ":e", strlen(":e")) == 0){
+}else if(strncmp(userInput, ":e", strlen(":e")) == 0)
+{
   printf("Please enter in a filename to close: ");
   fgets(userInput, 512, stdin);
   //printf("%s\n", "myfsOpen gives a segmentation fault i believe because we dont initialize our openFileList");
   myfsClose(userInput);
-}else
+}else if(strncmp(userInput, ":s", strlen(":s")) == 0)
 {
-  if(strncmp(userInput, closeValue, strlen(closeValue)) != 0)
-  {
-  printf("Unrecognized Command\n");
-  }else
-  {
+  printf("Please enter in a filename to seek: ");
+  fgets(userInput, 512, stdin);
+  //printf("%s\n", "myfsOpen gives a segmentation fault i believe because we dont initialize our openFileList");
+  //myfsSeek(userInput);
+}
+else if(strncmp(userInput, ":q", strlen(":q")) == 0)
+{
   printf("Closing Virtual Drive\n");
+}else
+  {
+    printf("Unrecognized Command\n");
   }
   
-}
+
 
 }
 
